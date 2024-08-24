@@ -16,7 +16,13 @@ class AppCoordinator {
     
     func pushCitySearch() {
         let viewController = CitySearchViewController()
-        viewController.buttonAction = { [weak self] in
+        let viewModel = CitySearchViewModel()
+        
+        viewController.viewModel = viewModel
+        
+        viewController.getCity = { [weak self, weak viewModel] cityName in
+            viewModel?.callAPI(cityName: cityName)
+            
             self?.pushCityDetails()
         }
         

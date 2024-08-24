@@ -14,6 +14,9 @@
 		DE0F07BB2C78F01F00677861 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0F07BA2C78F01F00677861 /* AppCoordinator.swift */; };
 		DE0F07C22C78F07D00677861 /* CitySearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0F07C12C78F07D00677861 /* CitySearchViewController.swift */; };
 		DE0F07C82C78F0C100677861 /* CityDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0F07C72C78F0C100677861 /* CityDetailsViewController.swift */; };
+		DE0F07CC2C78FA1000677861 /* QWButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0F07CB2C78FA1000677861 /* QWButton.swift */; };
+		DE97B03E2C78FB89007D9F05 /* QWTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE97B03D2C78FB89007D9F05 /* QWTextField.swift */; };
+		DE97B0402C7917BA007D9F05 /* CitySearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE97B03F2C7917BA007D9F05 /* CitySearchViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +29,9 @@
 		DE0F07BA2C78F01F00677861 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		DE0F07C12C78F07D00677861 /* CitySearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitySearchViewController.swift; sourceTree = "<group>"; };
 		DE0F07C72C78F0C100677861 /* CityDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityDetailsViewController.swift; sourceTree = "<group>"; };
+		DE0F07CB2C78FA1000677861 /* QWButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QWButton.swift; sourceTree = "<group>"; };
+		DE97B03D2C78FB89007D9F05 /* QWTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QWTextField.swift; sourceTree = "<group>"; };
+		DE97B03F2C7917BA007D9F05 /* CitySearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitySearchViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +74,7 @@
 		DE0F07B42C78EECF00677861 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				DE0F07C92C78F9DF00677861 /* Common */,
 				DE0F07C32C78F08E00677861 /* CityDetails */,
 				DE0F07BC2C78F03300677861 /* CitySearch */,
 				DE0F07B92C78F00D00677861 /* Coordinator */,
@@ -132,6 +139,7 @@
 		DE0F07BD2C78F04C00677861 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				DE97B03F2C7917BA007D9F05 /* CitySearchViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -180,6 +188,23 @@
 			children = (
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		DE0F07C92C78F9DF00677861 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				DE0F07CA2C78F9E700677861 /* View */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		DE0F07CA2C78F9E700677861 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				DE0F07CB2C78FA1000677861 /* QWButton.swift */,
+				DE97B03D2C78FB89007D9F05 /* QWTextField.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,6 +282,9 @@
 				DE0F07C82C78F0C100677861 /* CityDetailsViewController.swift in Sources */,
 				DE0F07A32C78EE0400677861 /* SceneDelegate.swift in Sources */,
 				DE0F07C22C78F07D00677861 /* CitySearchViewController.swift in Sources */,
+				DE0F07CC2C78FA1000677861 /* QWButton.swift in Sources */,
+				DE97B03E2C78FB89007D9F05 /* QWTextField.swift in Sources */,
+				DE97B0402C7917BA007D9F05 /* CitySearchViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

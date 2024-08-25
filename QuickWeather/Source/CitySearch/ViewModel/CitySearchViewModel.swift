@@ -8,43 +8,54 @@
 import Foundation
 
 class CitySearchViewModel {
-    #error("Provide your own API Key, and comment/remove this message")
-    let APIKey: String = ""
+    //    #error("Provide your own API Key, and comment/remove this message")
+    let APIKey: String = "5625eaada0f9977311cf60e2df9e34b3"
     
-    func fetchData(from url: URL) {
-        let urlRequest = URLRequest(url: url)
-        
-        let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
-            if let error = error {
-                print("Error occurred: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let data = data else {
-                print("No data received")
-                return
-            }
-            
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-                print("HTTP Status Code: \(httpResponse.statusCode)")
-                return
-            }
-            
-            do {
-                let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
-                print("Received data: \(jsonObject)")
-            } catch {
-                print("Failed to parse data: \(error.localizedDescription)")
-            }
+    var showAlert: ((String, String) -> Void)?
+    var citiesDidChange: ((Cities) -> Void)?
+    
+    var cities: Cities = [] {
+        didSet {
+            citiesDidChange?(cities)
         }
+    }
+    
+    func validateCityName(_ cityName: String) -> Bool {
+        let regexPattern = "^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\\s]+$"
         
-        task.resume()
+        return cityName.range(of: regexPattern, options: .regularExpression) != nil
     }
     
     func callAPI(cityName: String?) {
         guard let cityName,
-              let url = URL(string: "https://api.openweathermap.org/geo/1.0/direct?q=\(cityName)&appid=\(APIKey)")
+              let url = URL(string: "https://api.openweathermap.org/geo/1.0/direct?q=\(cityName)&limit=5&appid=\(APIKey)")
         else { return }
-        fetchData(from: url)
+        
+        NetworkManager.shared.fetchData(from: url) { [weak self] result in
+            switch result {
+            case .success(let data):
+                self?.handleSuccess(data: data)
+            case .failure(let error):
+                self?.handleError(error: error)
+            }
+        }
+    }
+    
+    private func handleSuccess(data: Data) {
+        do {
+            let decoder = JSONDecoder()
+            let cities = try decoder.decode(Cities.self, from: data)
+            
+            print(cities)
+            self.cities = cities
+        } catch {
+            print("Failed to parse data: \(error.localizedDescription)")
+        }
+    }
+    
+    private func handleError(error: Error) {
+        print("Error occurred: \(error.localizedDescription)")
+        let errorMessage = error.localizedDescription.appending("\n Did you add your API Key?")
+        showAlert?("Error", errorMessage)
     }
 }

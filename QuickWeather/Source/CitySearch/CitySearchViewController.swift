@@ -7,11 +7,16 @@
 
 import UIKit
 
-class CitySearchViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class CitySearchViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
     // MARK: - Binding Closures
     
     var getCity: ((String) -> Void)?
+    var onCitySelected: ((CityRemote) -> Void)?
+    
+    // MARK: - Private Properties
+    
+    private var cities: Cities = []
     
     // MARK: - Properties
     
@@ -21,39 +26,29 @@ class CitySearchViewController: UIViewController, UICollectionViewDataSource, UI
         let view = UIView()
         view.backgroundColor = .yellow
         view.translatesAutoresizingMaskIntoConstraints = false
+        
         return view
     }()
     
-    // Horizontal pager, just for funzies ATM
-    // TODO: do we need this doe?
-    lazy var colorPager: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.isPagingEnabled = true
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "colorCell")
-        return collectionView
-    }()
-    
-    lazy var button: QWButton = {
-        let button = QWButton(backgroundColor: .blue, title: "SEARCH")
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var cityTextField: QWTextField = {
+    lazy var searchBar: QWTextField = {
         let textField = QWTextField()
+        textField.placeholder = "Enter city name"
+        textField.returnKeyType = .search
+        textField.delegate = self
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        
         return textField
     }()
     
-    let colors: [UIColor] = [.red, .green, .blue, .orange, .purple]
+    lazy var resultsTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(CitySearchTableViewCell.self, forCellReuseIdentifier: "CitySearchCell")
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return tableView
+    }()
     
     // MARK: - Lifecycle
     
@@ -62,72 +57,18 @@ class CitySearchViewController: UIViewController, UICollectionViewDataSource, UI
         
         view.backgroundColor = .systemPink
         setupAutoLayout()
-        addKeyboardObservers()
+        bindViewModel()
     }
     
-    deinit {
-        removeKeyboardObservers()
-    }
+    // MARK: - Bind ViewModel
     
-    // MARK: - Keyboard Handling
-    
-    private func addKeyboardObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillShow(_:)),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil)
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillHide(_:)),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil)
-    }
-    
-    private func removeKeyboardObservers() {
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil)
-        
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil)
-    }
-    
-    @objc private func keyboardWillShow(_ notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-              let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
-        
-        let keyboardHeight = keyboardFrame.height
-        let bottomInset = keyboardHeight - view.safeAreaInsets.bottom
-        
-        UIView.animate(withDuration: animationDuration) { [weak self] in
-            self?.view.frame.origin.y = -bottomInset
+    private func bindViewModel() {
+        viewModel.citiesDidChange = { [weak self] locations in
+            DispatchQueue.main.async {
+                self?.cities = locations
+                self?.resultsTableView.reloadData()
+            }
         }
-    }
-    
-    @objc private func keyboardWillHide(_ notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
-        
-        UIView.animate(withDuration: animationDuration) { [weak self] in
-            self?.view.frame.origin.y = 0
-        }
-    }
-    
-    // MARK: - Button Action
-    
-    @objc private func buttonTapped() {
-        guard
-            let cityName = cityTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-            cityName.isEmpty == false
-        else { return }
-        
-        getCity?(cityName)
     }
     
     // MARK: - Setup AutoLayout
@@ -136,73 +77,105 @@ class CitySearchViewController: UIViewController, UICollectionViewDataSource, UI
         view.addSubview(container)
         
         NSLayoutConstraint.activate([
-            container.topAnchor.constraint(equalTo: view.topAnchor),
+            container.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             container.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             container.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             container.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
     
-    private func setupTextField() {
-        container.addSubview(cityTextField)
+    private func setupSearchBar() {
+        let searchBarTopPadding: CGFloat = 20
+        let searchBarHorizontalPadding: CGFloat = 12
+        let searchBarHeight: CGFloat = 50
+        
+        container.addSubview(searchBar)
         
         NSLayoutConstraint.activate([
-            cityTextField.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -20),
-            cityTextField.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12),
-            cityTextField.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12),
-            cityTextField.heightAnchor.constraint(equalToConstant: 50)
+            searchBar.topAnchor.constraint(equalTo: container.safeAreaLayoutGuide.topAnchor, constant: searchBarTopPadding),
+            searchBar.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: searchBarHorizontalPadding),
+            searchBar.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -searchBarHorizontalPadding),
+            searchBar.heightAnchor.constraint(equalToConstant: searchBarHeight)
         ])
     }
     
-    private func setupButton() {
-        container.addSubview(button)
+    private func setupTableView() {
+        let tableViewTopPadding: CGFloat = 25
+        
+        container.addSubview(resultsTableView)
         
         NSLayoutConstraint.activate([
-            button.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -20),
-            button.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12),
-            button.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12),
-            button.heightAnchor.constraint(equalToConstant: 50)
-        ])
-    }
-    
-    private func setupPager() {
-        container.addSubview(colorPager)
-        
-        NSLayoutConstraint.activate([
-            colorPager.topAnchor.constraint(equalTo: container.safeAreaLayoutGuide.topAnchor),
-            colorPager.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            colorPager.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            colorPager.bottomAnchor.constraint(equalTo: cityTextField.topAnchor, constant: -20)
+            resultsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: tableViewTopPadding),
+            resultsTableView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            resultsTableView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            resultsTableView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
         ])
     }
     
     private func setupAutoLayout() {
         setupContainer()
-        setupButton()
-        setupTextField()
-        setupPager()
+        setupSearchBar()
+        setupTableView()
     }
+    
 }
 
-// MARK: - UICollectionView Data Source
+// MARK: - UITableViewDataSource
 
 extension CitySearchViewController {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return colors.count
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return cities.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "colorCell", for: indexPath)
-        cell.backgroundColor = colors[indexPath.item]
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: "CitySearchCell",
+            for: indexPath) as? CitySearchTableViewCell
+        else {
+            return UITableViewCell()
+        }
+        
+        let location = cities[indexPath.row]
+        cell.configure(with: location)
+        
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+    // MARK: - UITableViewDelegate
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         
-        return CGSize(width: collectionView.frame.width,
-                      height: collectionView.frame.height)
+        let selectedLocation = cities[indexPath.row]
+        
+        print("Selected Location: \(selectedLocation)")
+        onCitySelected?(selectedLocation)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension CitySearchViewController {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        guard
+            let cityName = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+            !cityName.isEmpty
+        else {
+            searchBar.updateValidationLabel(withText: "Input cannot be empty", isValid: false)
+            
+            return false
+        }
+        
+        let isValid = viewModel.validateCityName(cityName)
+        
+        if isValid {
+            searchBar.updateValidationLabel(isValid: true)
+            viewModel.callAPI(cityName: cityName)
+            textField.resignFirstResponder()
+        } else {
+            searchBar.updateValidationLabel(withText: "Invalid input. Only letters and spaces are allowed.", isValid: false)
+        }
+        
+        return false
     }
 }

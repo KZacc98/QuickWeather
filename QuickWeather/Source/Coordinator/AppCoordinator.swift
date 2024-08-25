@@ -18,19 +18,30 @@ class AppCoordinator {
         let viewController = CitySearchViewController()
         let viewModel = CitySearchViewModel()
         
+        viewModel.showAlert = { [weak viewController] title, message in
+            DispatchQueue.main.async {
+                guard let viewController else { return }
+                DialogManager.shared.showAlert(on: viewController, title: title, message: message)
+            }
+        }
+        
         viewController.viewModel = viewModel
         
-        viewController.getCity = { [weak self, weak viewModel] cityName in
+        viewController.getCity = { [weak viewModel] cityName in
             viewModel?.callAPI(cityName: cityName)
-            
-            self?.pushCityDetails()
+        }
+        
+        viewController.onCitySelected = { [weak self] city in
+            self?.pushCityDetails(for: city)
         }
         
         navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushCityDetails() {
+    func pushCityDetails(for city: CityRemote) {
         let viewController = CityDetailsViewController()
+        
+        viewController.city = city
         
         viewController.buttonAction = { [weak self] in
             self?.navigationController?.popViewController(animated: true)

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DE05E7D52C7A2061003D7A1D /* DialogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE05E7D42C7A2061003D7A1D /* DialogManager.swift */; };
+		DE05E7D82C7A285C003D7A1D /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE05E7D72C7A285C003D7A1D /* NetworkManager.swift */; };
+		DE05E7DA2C7A2DB7003D7A1D /* CityRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE05E7D92C7A2DB7003D7A1D /* CityRemote.swift */; };
+		DE05E7DC2C7A3B48003D7A1D /* CitySearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE05E7DB2C7A3B48003D7A1D /* CitySearchTableViewCell.swift */; };
 		DE0F07A12C78EE0400677861 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0F07A02C78EE0400677861 /* AppDelegate.swift */; };
 		DE0F07A32C78EE0400677861 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0F07A22C78EE0400677861 /* SceneDelegate.swift */; };
 		DE0F07AA2C78EE0500677861 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE0F07A92C78EE0500677861 /* Assets.xcassets */; };
@@ -20,6 +24,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DE05E7D42C7A2061003D7A1D /* DialogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogManager.swift; sourceTree = "<group>"; };
+		DE05E7D72C7A285C003D7A1D /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		DE05E7D92C7A2DB7003D7A1D /* CityRemote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityRemote.swift; sourceTree = "<group>"; };
+		DE05E7DB2C7A3B48003D7A1D /* CitySearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitySearchTableViewCell.swift; sourceTree = "<group>"; };
 		DE0F079D2C78EE0400677861 /* QuickWeather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickWeather.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE0F07A02C78EE0400677861 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DE0F07A22C78EE0400677861 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -45,6 +53,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DE05E7D22C7A204F003D7A1D /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				DE05E7D62C7A284C003D7A1D /* NetworkManager */,
+				DE05E7D32C7A2055003D7A1D /* DialogManager */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		DE05E7D32C7A2055003D7A1D /* DialogManager */ = {
+			isa = PBXGroup;
+			children = (
+				DE05E7D42C7A2061003D7A1D /* DialogManager.swift */,
+			);
+			path = DialogManager;
+			sourceTree = "<group>";
+		};
+		DE05E7D62C7A284C003D7A1D /* NetworkManager */ = {
+			isa = PBXGroup;
+			children = (
+				DE05E7D72C7A285C003D7A1D /* NetworkManager.swift */,
+			);
+			path = NetworkManager;
+			sourceTree = "<group>";
+		};
 		DE0F07942C78EE0400677861 = {
 			isa = PBXGroup;
 			children = (
@@ -105,6 +138,7 @@
 		DE0F07B72C78EFD100677861 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				DE05E7D22C7A204F003D7A1D /* Managers */,
 				DE0F07B82C78F00000677861 /* Extensions */,
 			);
 			path = Utilities;
@@ -147,6 +181,7 @@
 		DE0F07BE2C78F05B00677861 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				DE05E7DB2C7A3B48003D7A1D /* CitySearchTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -154,6 +189,7 @@
 		DE0F07BF2C78F06100677861 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				DE05E7D92C7A2DB7003D7A1D /* CityRemote.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -278,6 +314,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE0F07BB2C78F01F00677861 /* AppCoordinator.swift in Sources */,
+				DE05E7DA2C7A2DB7003D7A1D /* CityRemote.swift in Sources */,
+				DE05E7DC2C7A3B48003D7A1D /* CitySearchTableViewCell.swift in Sources */,
+				DE05E7D52C7A2061003D7A1D /* DialogManager.swift in Sources */,
+				DE05E7D82C7A285C003D7A1D /* NetworkManager.swift in Sources */,
 				DE0F07A12C78EE0400677861 /* AppDelegate.swift in Sources */,
 				DE0F07C82C78F0C100677861 /* CityDetailsViewController.swift in Sources */,
 				DE0F07A32C78EE0400677861 /* SceneDelegate.swift in Sources */,
@@ -436,6 +476,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -464,6 +505,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

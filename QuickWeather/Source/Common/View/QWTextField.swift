@@ -9,9 +9,20 @@ import UIKit
 
 class QWTextField: UITextField {
 
+    let validationLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = .red
+        label.textAlignment = .center
+        label.isHidden = true
+        return label
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
+        setupValidationLabel()
     }
     
     required init?(coder: NSCoder) {
@@ -29,8 +40,22 @@ class QWTextField: UITextField {
         adjustsFontSizeToFitWidth = true
         backgroundColor = .tertiarySystemGroupedBackground
         autocorrectionType = .no
-        placeholder = "MIASTO"
         translatesAutoresizingMaskIntoConstraints = false
     }
 
+    private func setupValidationLabel() {
+        addSubview(validationLabel)
+        
+        NSLayoutConstraint.activate([
+            validationLabel.topAnchor.constraint(equalTo: self.bottomAnchor, constant: 5),
+            validationLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            validationLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+        ])
+    }
+
+    func updateValidationLabel(withText text: String? = nil, isValid: Bool) {
+        validationLabel.text = text
+        validationLabel.textColor = .red
+        validationLabel.isHidden = isValid
+    }
 }

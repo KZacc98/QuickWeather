@@ -9,7 +9,13 @@ import UIKit
 
 class CityDetailsViewController: UIViewController {
     
+    // MARK: - Binding Closures
+    
     var buttonAction: (() -> Void)?
+    
+    // MARK: - Properties
+    
+    var city: CityRemote?
     
     lazy var button: UIButton = {
         let button = UIButton(type: .system)
@@ -24,18 +30,22 @@ class CityDetailsViewController: UIViewController {
         return button
     }()
     
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .systemGreen
         view.addSubview(button)
         setupAutoLayout()
-        
+        dump(city)
     }
     
     @objc func buttonTapped() {
         buttonAction?()
     }
+    
+    // MARK: - Setup AutoLayout
     
     func setupAutoLayout() {
         NSLayoutConstraint.activate([

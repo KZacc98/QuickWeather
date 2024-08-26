@@ -146,10 +146,10 @@ extension CitySearchViewController {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let selectedLocation = cities[indexPath.row]
+        let selectedCity = cities[indexPath.row]
         
-        print("Selected Location: \(selectedLocation)")
-        onCitySelected?(selectedLocation)
+        print("Selected Location: \(selectedCity)")
+        onCitySelected?(selectedCity)
     }
 }
 
@@ -170,7 +170,7 @@ extension CitySearchViewController {
         
         if isValid {
             searchBar.updateValidationLabel(isValid: true)
-            viewModel.callAPI(cityName: cityName)
+            viewModel.getCities(cityName: cityName)
             textField.resignFirstResponder()
         } else {
             searchBar.updateValidationLabel(withText: "Invalid input. Only letters and spaces are allowed.", isValid: false)

@@ -43,7 +43,7 @@ class CitySearchTableViewCell: UITableViewCell {
         ])
     }
     
-    // MARK: - Configuration Method
+    // MARK: - Configuration
     
     func configure(with city: CityRemote) {
         titleLabel.text = "\(city.name), \(city.country)"

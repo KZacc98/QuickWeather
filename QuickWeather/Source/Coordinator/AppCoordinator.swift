@@ -28,7 +28,7 @@ class AppCoordinator {
         viewController.viewModel = viewModel
         
         viewController.getCity = { [weak viewModel] cityName in
-            viewModel?.callAPI(cityName: cityName)
+            viewModel?.getCities(cityName: cityName)
         }
         
         viewController.onCitySelected = { [weak self] city in
@@ -41,11 +41,9 @@ class AppCoordinator {
     func pushCityDetails(for city: CityRemote) {
         let viewController = CityDetailsViewController()
         
-        viewController.city = city
+        viewController.viewModel = CityDetailsViewModel(city: city)
         
-        viewController.buttonAction = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
+        viewController.city = city
         
         navigationController?.pushViewController(viewController, animated: true)
     }

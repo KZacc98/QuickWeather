@@ -8,50 +8,55 @@
 import Foundation
 
 class CitySearchViewModel {
-    //    #error("Provide your own API Key, and comment/remove this message")
-    let APIKey: String = "5625eaada0f9977311cf60e2df9e34b3"
+    
+    // MARK: - Binding Closures
     
     var showAlert: ((String, String) -> Void)?
     var citiesDidChange: ((Cities) -> Void)?
+    var weatherFetched: ((CityRemote, WeatherDomain) -> Void)?
+    
+    // MARK: - Properties
+    
+    let worker = WeatherWorker()
     
     var cities: Cities = [] {
         didSet {
             citiesDidChange?(cities)
         }
     }
+
+    // MARK: - Public Methods
     
-    func validateCityName(_ cityName: String) -> Bool {
-        let regexPattern = "^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\\s]+$"
+    func getCities(cityName: String?) {
+        guard let cityName else { return }
         
-        return cityName.range(of: regexPattern, options: .regularExpression) != nil
-    }
-    
-    func callAPI(cityName: String?) {
-        guard let cityName,
-              let url = URL(string: "https://api.openweathermap.org/geo/1.0/direct?q=\(cityName)&limit=5&appid=\(APIKey)")
-        else { return }
-        
-        NetworkManager.shared.fetchData(from: url) { [weak self] result in
+        worker.getCities(cityName: cityName) { [weak self] result in
             switch result {
-            case .success(let data):
-                self?.handleSuccess(data: data)
-            case .failure(let error):
-                self?.handleError(error: error)
+            case .success(let success):
+                self?.cities = success
+            case .failure(let failure):
+                self?.handleError(error: failure)
             }
         }
     }
     
-    private func handleSuccess(data: Data) {
-        do {
-            let decoder = JSONDecoder()
-            let cities = try decoder.decode(Cities.self, from: data)
-            
-            print(cities)
-            self.cities = cities
-        } catch {
-            print("Failed to parse data: \(error.localizedDescription)")
+    func getWeather(for city: CityRemote) {
+        worker.getWeatherData(for: city) { [weak self] result in
+            switch result {
+            case .success(let success):
+                self?.weatherFetched?(city, success)
+            case .failure(let failure):
+                self?.handleError(error: failure)
+            }
         }
     }
+    
+    func validateCityName(_ cityName: String) -> Bool {
+        let regexPattern = "^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\\s]+$"
+        return cityName.range(of: regexPattern, options: .regularExpression) != nil
+    }
+    
+    // MARK: - Private Methods
     
     private func handleError(error: Error) {
         print("Error occurred: \(error.localizedDescription)")

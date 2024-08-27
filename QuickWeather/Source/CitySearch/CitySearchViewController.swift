@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CitySearchViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
+class CitySearchViewController: UIViewController {
     
     // MARK: - Binding Closures
     
@@ -20,14 +20,28 @@ class CitySearchViewController: UIViewController, UITableViewDataSource, UITable
     
     // MARK: - Properties
     
-    var viewModel: CitySearchViewModel!
+    var viewModel: CitySearchViewModel! {
+        didSet {
+            cities = viewModel.cities
+        }
+    }
     
     lazy var container: UIView = {
         let view = UIView()
-        view.backgroundColor = .yellow
+        view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
+    }()
+    
+    private let gradientLayer: CAGradientLayer = {
+        let layer = CAGradientLayer()
+        layer.colors = [UIColor.blue.cgColor, UIColor.white.cgColor]
+        layer.locations = [0.0, 1.0]
+        layer.startPoint = CGPoint(x: 0.5, y: 0.0)
+        layer.endPoint = CGPoint(x: 0.5, y: 1.0)
+        
+        return layer
     }()
     
     lazy var searchBar: QWTextField = {
@@ -44,7 +58,6 @@ class CitySearchViewController: UIViewController, UITableViewDataSource, UITable
         let tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(CitySearchTableViewCell.self, forCellReuseIdentifier: "CitySearchCell")
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         return tableView
@@ -56,8 +69,15 @@ class CitySearchViewController: UIViewController, UITableViewDataSource, UITable
         super.viewDidLoad()
         
         view.backgroundColor = .systemPink
+        title = "Search"
+        setupBackgroundView()
         setupAutoLayout()
         bindViewModel()
+        updateGradientForTimeOfDay()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        //TODO: clear input at return
     }
     
     // MARK: - Bind ViewModel
@@ -84,6 +104,38 @@ class CitySearchViewController: UIViewController, UITableViewDataSource, UITable
         ])
     }
     
+    func setupBackgroundView() {
+        gradientLayer.frame = view.bounds
+        view.layer.insertSublayer(gradientLayer, at: 0)
+    }
+    
+    func updateGradientColors(topColor: UIColor, bottomColor: UIColor) {
+        gradientLayer.colors = [topColor.cgColor, bottomColor.cgColor]
+    }
+    
+    func updateGradientForTimeOfDay() {
+        let hour = Calendar.current.component(.hour, from: Date())
+        var topColor: UIColor
+        var bottomColor: UIColor
+        
+        switch hour {
+        case 6...8:
+            topColor = UIColor(named: "DawnTop") ?? .white
+            bottomColor = UIColor(named: "DawnBottom") ?? .white
+        case 9...16:
+            topColor = UIColor(named: "DayTop") ?? .white
+            bottomColor = UIColor(named: "DayBottom") ?? .white
+        case 17...19:
+            topColor = UIColor(named: "DuskTop") ?? .white
+            bottomColor = UIColor(named: "DuskBottom") ?? .white
+        default:
+            topColor = UIColor(named: "NightTop") ?? .white
+            bottomColor = UIColor(named: "NightBottom") ?? .white
+        }
+        
+        updateGradientColors(topColor: topColor, bottomColor: bottomColor)
+    }
+    
     private func setupSearchBar() {
         let searchBarTopPadding: CGFloat = 20
         let searchBarHorizontalPadding: CGFloat = 12
@@ -100,9 +152,12 @@ class CitySearchViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     private func setupTableView() {
-        let tableViewTopPadding: CGFloat = 25
+        let tableViewTopPadding: CGFloat = 30
         
         container.addSubview(resultsTableView)
+        
+        resultsTableView.register(PlaceholderCell.self, forCellReuseIdentifier: "PlaceholderCell")
+        resultsTableView.register(CitySearchTableViewCell.self, forCellReuseIdentifier: "CitySearchCell")
         
         NSLayoutConstraint.activate([
             resultsTableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: tableViewTopPadding),
@@ -122,40 +177,54 @@ class CitySearchViewController: UIViewController, UITableViewDataSource, UITable
 
 // MARK: - UITableViewDataSource
 
-extension CitySearchViewController {
+extension CitySearchViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cities.count
+        // Return number of rows based on your data or placeholder if no data yet
+        return cities.isEmpty ? 1 : cities.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: "CitySearchCell",
-            for: indexPath) as? CitySearchTableViewCell
-        else {
-            return UITableViewCell()
+        if cities.isEmpty {
+            // Return the placeholder cell when there are no cities
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: "PlaceholderCell",
+                for: indexPath) as? PlaceholderCell
+            else {
+                return UITableViewCell()
+            }
+            
+            // Configure placeholder cell
+            cell.configure(withImage: UIImage(named: "Search"), andText: "Perform your first search, previously searched cities will appear here for easier access")
+            return cell
+        } else {
+            // Return the regular city cell
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: "CitySearchCell",
+                for: indexPath) as? CitySearchTableViewCell
+            else {
+                return UITableViewCell()
+            }
+            
+            let location = cities[indexPath.row]
+            cell.configure(with: location)
+            return cell
         }
-        
-        let location = cities[indexPath.row]
-        cell.configure(with: location)
-        
-        return cell
     }
     
-    // MARK: - UITableViewDelegate
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        let selectedCity = cities[indexPath.row]
-        
-        print("Selected Location: \(selectedCity)")
-        onCitySelected?(selectedCity)
+        if !cities.isEmpty {
+            tableView.deselectRow(at: indexPath, animated: true)
+            let selectedCity = cities[indexPath.row]
+            onCitySelected?(selectedCity)
+        } else {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
 }
 
 // MARK: - UITextFieldDelegate
 
-extension CitySearchViewController {
+extension CitySearchViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         guard
             let cityName = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines),

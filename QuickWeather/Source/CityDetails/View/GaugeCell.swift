@@ -13,21 +13,44 @@ class GaugeCell: UICollectionViewCell {
     
     lazy var mainBackgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemPink
+        view.backgroundColor = .clear
         view.setShadow(cornerRadius: 12)
         view.translatesAutoresizingMaskIntoConstraints = false
+        
+        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = view.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurEffectView.layer.cornerRadius = 12
+        blurEffectView.clipsToBounds = true
+        
+        view.addSubview(blurEffectView)
+        view.sendSubviewToBack(blurEffectView)
         
         return view
     }()
     
     lazy var supplementaryIcon: UIImageView = {
         let image = UIImageView()
-        image.tintColor = .white
+        image.tintColor = .black
         image.isHidden = true
         image.contentMode = .scaleAspectFit
         image.translatesAutoresizingMaskIntoConstraints = false
         
         return image
+    }()
+    
+    lazy var moreIcon: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 8
+        imageView.clipsToBounds = true
+        imageView.tintColor = .black
+        imageView.image = UIImage(named: "Info")
+        imageView.isHidden = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return imageView
     }()
     
     lazy var gaugeView: CustomGaugeView = {
@@ -74,12 +97,18 @@ class GaugeCell: UICollectionViewCell {
         gaugeView.addSubview(gaugeLabel)
         gaugeView.addSubview(descriptionLabel)
         mainBackgroundView.addSubview(supplementaryIcon)
+        mainBackgroundView.addSubview(moreIcon)
         
         NSLayoutConstraint.activate([
-            mainBackgroundView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            mainBackgroundView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
-            mainBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            mainBackgroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            mainBackgroundView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            mainBackgroundView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+            mainBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            mainBackgroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            
+            moreIcon.topAnchor.constraint(equalTo: mainBackgroundView.topAnchor, constant: 8),
+            moreIcon.trailingAnchor.constraint(equalTo: mainBackgroundView.trailingAnchor, constant: -8),
+            moreIcon.widthAnchor.constraint(equalToConstant: 24),
+            moreIcon.heightAnchor.constraint(equalToConstant: 24),
             
             gaugeView.topAnchor.constraint(equalTo: mainBackgroundView.topAnchor, constant: 12),
             gaugeView.bottomAnchor.constraint(equalTo: mainBackgroundView.bottomAnchor, constant: -12),
@@ -118,6 +147,12 @@ class GaugeCell: UICollectionViewCell {
             supplementaryIcon.isHidden = false
         } else {
             supplementaryIcon.isHidden = true
+        }
+        
+        if data.dataType.isDetailed {
+            moreIcon.isHidden = false
+        } else {
+            moreIcon.isHidden = true
         }
     }
 }

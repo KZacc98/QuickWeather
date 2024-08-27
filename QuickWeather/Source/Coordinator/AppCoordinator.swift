@@ -44,7 +44,23 @@ class AppCoordinator {
         viewController.viewModel = CityDetailsViewModel(city: city)
         
         viewController.city = city
+        viewController.presentDetails = { title in
+            self.presentWeatherDetail(title: title)
+        }
         
         navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func presentWeatherDetail(title: String) {
+        let weatherDetailViewController = WeatherDetailViewController()
+        weatherDetailViewController.title = title
+        
+        let navigationController = UINavigationController(rootViewController: weatherDetailViewController)
+        
+        weatherDetailViewController.closeModal = { [weak weatherDetailViewController] in
+            weatherDetailViewController?.dismiss(animated: true, completion: nil)
+        }
+        
+        self.navigationController?.present(navigationController, animated: true, completion: nil)
     }
 }

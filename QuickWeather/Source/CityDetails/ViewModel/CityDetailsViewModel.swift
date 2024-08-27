@@ -10,6 +10,7 @@ import UIKit
 class CityDetailsViewModel {
     var showAlert: ((String, String) -> Void)?
     var cellDataChanged: (([WeatherCellData]) -> Void)?
+    var updateGradient: (((topColor: UIColor, bottomColor: UIColor)) -> Void)?
     
     let worker = WeatherWorker()
     var city: CityRemote
@@ -42,91 +43,102 @@ class CityDetailsViewModel {
     }
     
     func makeWeatherCellData(weatherData: WeatherDomain) -> [WeatherCellData] {
-        var cellDataArray: [WeatherCellData] = []
+        let feelsLike = createCellData(
+            for: .tempFeelsLike,
+            bottomText: weatherData.weatherDetails.feelsLike.localizedTemperature)
+        let humidity = createCellData(
+            for: .humidity,
+            bottomText: weatherData.weatherDetails.humidity.percentage,
+            gaugePercentage: weatherData.weatherDetails.humidity.gaugePercentage)
+        let cloudiness = createCellData(
+            for: .cloudiness,
+            bottomText: "\(weatherData.clouds.cloudiness)%",
+            gaugePercentage: CGFloat(weatherData.clouds.cloudiness) / 100.0)
+        let visibility = createCellData(
+            for: .visibility,
+            bottomText: "\(weatherData.visibility) meters")
+        let windSpeed = createCellData(
+            for: .windSpeed,
+            bottomText: "\(weatherData.wind.speed) m/s")
+        let pressure = createCellData(
+            for: .pressure,
+            bottomText: weatherData.weatherDetails.pressure.inHPA)
+        
+        var cellDataArray: [WeatherCellData] = [
+            feelsLike,
+            humidity,
+            cloudiness,
+            visibility,
+            windSpeed,
+            pressure
+        ]
 
-        cellDataArray.append(createSimpleWeatherCellData(
-            imageName: "FeelsLike",
-            topText: "Feels Like",
-            bottomText: weatherData.weatherDetails.feelsLike.localizedTemperature))
-        cellDataArray.append(createGaugeWeatherCellData(
-            imageName: "Humidity",
-            topText: weatherData.weatherDetails.humidity.percentage,
-            bottomText: "Humidity",
-            gaugePercentage: weatherData.weatherDetails.humidity.gaugePercentage))
-        cellDataArray.append(createGaugeWeatherCellData(
-            imageName: "Cloudiness",
-            topText: "\(weatherData.clouds.cloudiness)%",
-            bottomText: "Cloudiness",
-            gaugePercentage: CGFloat(weatherData.clouds.cloudiness) / 100.0))
-        cellDataArray.append(createSimpleWeatherCellData(
-            imageName: "Visibility", topText: "Visibility", bottomText: "\(weatherData.visibility) meters"))
-        cellDataArray.append(createSimpleWeatherCellData(
-            imageName: "WindSpeed",
-            topText: "Wind Speed",
-            bottomText: "\(weatherData.wind.speed) m/s"))
-
-        if let rain = weatherData.rain {
-            if let oneHourRain = rain.oneHour {
-                cellDataArray.append(createSimpleWeatherCellData(
-                    imageName: "Rain",
-                    topText: "Rain (Last 1 Hour)",
-                    bottomText: "\(oneHourRain) mm"))
-            }
-            if let threeHourRain = rain.threeHour {
-                cellDataArray.append(createSimpleWeatherCellData(
-                    imageName: "Rain",
-                    topText: "Rain (Last 3 Hours)",
-                    bottomText: "\(threeHourRain) mm"))
-            }
+        if let rain = weatherData.rain, let oneHourRain = rain.oneHour {
+            let rainData = createCellData(
+                for: .rain,
+                bottomText: "\(oneHourRain) mm")
+            cellDataArray.insert(rainData, at: 0)
         }
 
-        if let snow = weatherData.snow {
-            if let oneHourSnow = snow.oneHour {
-                cellDataArray.append(createSimpleWeatherCellData(
-                    imageName: "Snow",
-                    topText: "Snow (Last 1 Hour)",
-                    bottomText: "\(oneHourSnow) mm"))
-            }
-            if let threeHourSnow = snow.threeHour {
-                cellDataArray.append(createSimpleWeatherCellData(
-                    imageName: "Snow",
-                    topText: "Snow (Last 3 Hours)",
-                    bottomText: "\(threeHourSnow) mm"))
-            }
+        if let snow = weatherData.snow, let oneHourSnow = snow.oneHour {
+            let snowData = createCellData(
+                for: .snow,
+                bottomText: "\(oneHourSnow) mm")
+            cellDataArray.insert(snowData, at: 0)
         }
-
-        cellDataArray.append(createSimpleWeatherCellData(
-            imageName: "Pressure",
-            topText: "Pressure",
-            bottomText: weatherData.weatherDetails.pressure.inHPA))
 
         return cellDataArray
     }
-
+    
     private func createSimpleWeatherCellData(
-        imageName: String,
-        topText: String,
+        weatherDataType: WeatherDataType,
         bottomText: String
     ) -> WeatherCellData {
         return WeatherCellData(
-            image: UIImage(named: imageName),
-            topText: topText,
-            bottomText: bottomText)
+            dataType: weatherDataType,
+            image: weatherDataType.image,
+            topText: weatherDataType.title,
+            bottomText: bottomText
+        )
     }
 
     private func createGaugeWeatherCellData(
-        imageName: String,
-        topText: String,
-        bottomText: String,
+        weatherDataType: WeatherDataType,
+        description: String,
+        gaugeText: String,
         gaugePercentage: CGFloat
     ) -> WeatherCellData {
         let gaugeData = GaugeData(gaugePercentage: gaugePercentage)
         return WeatherCellData(
             cellType: .gauge,
-            image: UIImage(named: imageName),
-            topText: topText,
-            bottomText: bottomText,
-            gaugeData: gaugeData)
+            dataType: weatherDataType,
+            image: weatherDataType.image,
+            topText: gaugeText,
+            bottomText: description,
+            gaugeData: gaugeData
+        )
+    }
+    
+    func createCellData(
+        for category: WeatherCategory,
+        bottomText: String,
+        gaugePercentage: CGFloat? = nil
+    ) -> WeatherCellData {
+        let weatherDataType = WeatherDataType(category: category)
+        
+        if let gaugePercentage = gaugePercentage {
+            return createGaugeWeatherCellData(
+                weatherDataType: weatherDataType,
+                description: weatherDataType.title,
+                gaugeText: bottomText,
+                gaugePercentage: gaugePercentage
+            )
+        } else {
+            return createSimpleWeatherCellData(
+                weatherDataType: weatherDataType,
+                bottomText: bottomText
+            )
+        }
     }
     
     private func handleError(error: Error) {

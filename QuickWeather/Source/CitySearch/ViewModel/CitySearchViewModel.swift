@@ -33,6 +33,10 @@ class CitySearchViewModel {
         worker.getCities(cityName: cityName) { [weak self] result in
             switch result {
             case .success(let success):
+                guard success.isEmpty == false else {
+                    self?.showAlert?("", "No cities found")
+                    return
+                }
                 self?.cities = success
             case .failure(let failure):
                 self?.handleError(error: failure)

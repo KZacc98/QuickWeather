@@ -10,6 +10,8 @@ import UIKit
 class CityDetailsViewController: UIViewController {
 
     // MARK: - Properties
+    
+    var presentDetails: ((String) -> Void)?
 
     var city: CityRemote?
     var viewModel: CityDetailsViewModel!
@@ -21,7 +23,21 @@ class CityDetailsViewController: UIViewController {
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
         layout.headerReferenceSize = CGSize(width: UIScreen.main.bounds.width, height: 100)
-        return UICollectionView(frame: .zero, collectionViewLayout: layout)
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        
+        return collectionView
+    }()
+    
+    private let gradientLayer: CAGradientLayer = {
+        let layer = CAGradientLayer()
+        layer.colors = [UIColor.blue.cgColor, UIColor.white.cgColor]
+        layer.locations = [0.0, 1.0]
+        layer.startPoint = CGPoint(x: 0.5, y: 0.0)
+        layer.endPoint = CGPoint(x: 0.5, y: 1.0)
+        
+        return layer
     }()
     
     private let spinner = UIActivityIndicatorView(style: .large)
@@ -33,10 +49,13 @@ class CityDetailsViewController: UIViewController {
         
         view.backgroundColor = .white
         title = "City Details"
+        
+        setupBackgroundView()
         setupCollectionView()
         setupSpinner()
         bindViewModel()
         viewModel.getWeather(for: viewModel.city)
+        updateGradientForTimeOfDay()
     }
     
     // MARK: - Bind ViewModel
@@ -49,6 +68,12 @@ class CityDetailsViewController: UIViewController {
                 self?.collectionView.reloadData()
             }
         }
+        
+        viewModel.updateGradient = { [weak self] colors in
+            self?.updateGradientColors(
+                topColor: colors.topColor,
+                bottomColor: colors.bottomColor)
+        }
     }
     
     // MARK: - Setup Spinner
@@ -59,6 +84,40 @@ class CityDetailsViewController: UIViewController {
         spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         spinner.startAnimating()
+    }
+    
+    // MARK: - Setup background gradient
+    
+    func setupBackgroundView() {
+        gradientLayer.frame = view.bounds
+        view.layer.insertSublayer(gradientLayer, at: 0)
+    }
+    
+    func updateGradientColors(topColor: UIColor, bottomColor: UIColor) {
+        gradientLayer.colors = [topColor.cgColor, bottomColor.cgColor]
+    }
+    
+    func updateGradientForTimeOfDay() {
+        let hour = Calendar.current.component(.hour, from: Date())
+        var topColor: UIColor
+        var bottomColor: UIColor
+        
+        switch hour {
+        case 6...8:
+            topColor = UIColor(named: "DawnTop") ?? .white
+            bottomColor = UIColor(named: "DawnBottom") ?? .white
+        case 9...16:
+            topColor = UIColor(named: "DayTop") ?? .white
+            bottomColor = UIColor(named: "DayBottom") ?? .white
+        case 17...19:
+            topColor = UIColor(named: "DuskTop") ?? .white
+            bottomColor = UIColor(named: "DuskBottom") ?? .white
+        default:
+            topColor = UIColor(named: "NightTop") ?? .white
+            bottomColor = UIColor(named: "NightBottom") ?? .white
+        }
+        
+        updateGradientColors(topColor: topColor, bottomColor: bottomColor)
     }
     
     // MARK: - Setup CollectionView
@@ -90,8 +149,8 @@ class CityDetailsViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
@@ -151,7 +210,7 @@ extension CityDetailsViewController: UICollectionViewDelegate, UICollectionViewD
         
         switch weatherCellData.cellType {
         case .gauge:
-            let width = (collectionView.frame.width - 30) / 2
+            let width = (collectionView.frame.width - 36) / 2
             return CGSize(width: width, height: 150)
             
         case .simple:
@@ -164,7 +223,7 @@ extension CityDetailsViewController: UICollectionViewDelegate, UICollectionViewD
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 100)
+        return CGSize(width: collectionView.frame.width, height: 200)
     }
     
     func collectionView(
@@ -183,7 +242,7 @@ extension CityDetailsViewController: UICollectionViewDelegate, UICollectionViewD
            let weatherData = viewModel.weatherData {
             header.configure(
                 with: city.name,
-                temperature: weatherData.weatherDetails.temperature.localizedTemperature)
+                temperature: weatherData.weatherDetails.temperature)
         }
         
         return header
@@ -193,15 +252,10 @@ extension CityDetailsViewController: UICollectionViewDelegate, UICollectionViewD
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        let test = WeatherWorker()
+        let weatherCellData = viewModel.weatherCellData[indexPath.item]
         
-        test.getForecast(for: viewModel.city) { result in
-            switch result {
-            case .success(let success):
-                dump(success)
-            case .failure(let failure):
-                dump(failure)
-            }
+        if weatherCellData.dataType.isDetailed {
+            presentDetails?(weatherCellData.dataType.title)
         }
     }
 }

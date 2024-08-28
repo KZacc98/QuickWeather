@@ -12,17 +12,27 @@ class CitySearchViewModel {
     // MARK: - Binding Closures
     
     var showAlert: ((String, String) -> Void)?
-    var citiesDidChange: ((Cities) -> Void)?
+    var citiesDidChange: (([CityRemote]) -> Void)?
     var weatherFetched: ((CityRemote, WeatherDomain) -> Void)?
     
     // MARK: - Properties
     
     let worker = WeatherWorker()
     
-    var cities: Cities = [] {
+    var cities: [CityRemote] = [] {
         didSet {
             citiesDidChange?(cities)
         }
+    }
+    
+    // MARK: - Private Properties
+    
+    @PersistStorage(key: .savedCities, defaultValue: []) private var savedCities: [CityRemote]?
+    
+    // MARK: - Initialization
+    
+    init() {
+        setSavedCities()
     }
 
     // MARK: - Public Methods
@@ -44,17 +54,6 @@ class CitySearchViewModel {
         }
     }
     
-    func getWeather(for city: CityRemote) {
-        worker.getWeatherData(for: city) { [weak self] result in
-            switch result {
-            case .success(let success):
-                self?.weatherFetched?(city, success)
-            case .failure(let failure):
-                self?.handleError(error: failure)
-            }
-        }
-    }
-    
     func validateCityName(_ cityName: String) -> Bool {
         let regexPattern = "^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\\s]+$"
         return cityName.range(of: regexPattern, options: .regularExpression) != nil
@@ -66,5 +65,19 @@ class CitySearchViewModel {
         print("Error occurred: \(error.localizedDescription)")
         let errorMessage = error.localizedDescription.appending("\n Did you add your API Key?")
         showAlert?("Error", errorMessage)
+    }
+    
+    func addCityToSavedCities(_ city: CityRemote) {
+        var allCities = savedCities ?? []
+        if !allCities.contains(where: { $0.latitude == city.latitude && $0.longitude == city.longitude }) {
+            allCities.append(city)
+            savedCities = allCities
+        }
+    }
+    
+    func setSavedCities() {
+        if let allCities = savedCities {
+            cities = allCities
+        }
     }
 }

@@ -44,21 +44,23 @@ class AppCoordinator {
         viewController.viewModel = CityDetailsViewModel(city: city)
         
         viewController.city = city
-        viewController.presentDetails = { title in
-            self.presentWeatherDetail(title: title)
+        viewController.presentDetails = { [weak self] title, forecastData in
+            DispatchQueue.main.async {
+                self?.presentWeatherDetail(dataType: title, forecast: forecastData)
+            }
         }
         
         navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func presentWeatherDetail(title: String) {
-        let weatherDetailViewController = WeatherDetailViewController()
-        weatherDetailViewController.title = title
+    func presentWeatherDetail(dataType: WeatherDataType, forecast: [ForecastDomain]) {
+        let viewController = WeatherDetailViewController()
+        viewController.viewModel = WeatherDetailViewModel(dataType: dataType, forecast: forecast)
         
-        let navigationController = UINavigationController(rootViewController: weatherDetailViewController)
+        let navigationController = UINavigationController(rootViewController: viewController)
         
-        weatherDetailViewController.closeModal = { [weak weatherDetailViewController] in
-            weatherDetailViewController?.dismiss(animated: true, completion: nil)
+        viewController.closeModal = { [weak viewController] in
+            viewController?.dismiss(animated: true, completion: nil)
         }
         
         self.navigationController?.present(navigationController, animated: true, completion: nil)

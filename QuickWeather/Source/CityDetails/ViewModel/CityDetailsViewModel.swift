@@ -8,12 +8,20 @@
 import UIKit
 
 class CityDetailsViewModel {
+    
+    // MARK: - Binding Closures
+    
     var showAlert: ((String, String) -> Void)?
     var cellDataChanged: (([WeatherCellData]) -> Void)?
     var updateGradient: (((topColor: UIColor, bottomColor: UIColor)) -> Void)?
+    var presentDetails: ((WeatherDataType, [ForecastDomain]) -> Void)?
+    
+    // MARK: - Properties
     
     let worker = WeatherWorker()
     var city: CityRemote
+    var forecastDetails: WeatherForecastDomain?
+    
     var weatherData: WeatherDomain? {
         didSet {
             guard let weatherData else { return }
@@ -39,6 +47,46 @@ class CityDetailsViewModel {
             case .failure(let failure):
                 self?.handleError(error: failure)
             }
+        }
+    }
+    
+    // MARK: - Public methods
+    
+    func getWeatherDetails(for type: WeatherDataType) {
+        if let forecastDetails {
+            presentDetails?(type, forecastDetails.forecasts)
+        } else {
+            worker.getForecast(for: city) { [weak self] result in
+                switch result {
+                case .success(let success):
+                    self?.forecastDetails = success
+                    self?.presentDetails?(type, success.forecasts)
+                case .failure(let failure):
+                    self?.handleError(error: failure)
+                }
+            }
+        }
+    }
+    
+    func createCellData(
+        for category: WeatherCategory,
+        bottomText: String,
+        gaugePercentage: CGFloat? = nil
+    ) -> WeatherCellData {
+        let weatherDataType = WeatherDataType(category: category)
+        
+        if let gaugePercentage = gaugePercentage {
+            return createGaugeWeatherCellData(
+                weatherDataType: weatherDataType,
+                description: weatherDataType.title,
+                gaugeText: bottomText,
+                gaugePercentage: gaugePercentage
+            )
+        } else {
+            return createSimpleWeatherCellData(
+                weatherDataType: weatherDataType,
+                bottomText: bottomText
+            )
         }
     }
     
@@ -90,6 +138,8 @@ class CityDetailsViewModel {
         return cellDataArray
     }
     
+    // MARK: - Private Methods
+    
     private func createSimpleWeatherCellData(
         weatherDataType: WeatherDataType,
         bottomText: String
@@ -117,28 +167,6 @@ class CityDetailsViewModel {
             bottomText: description,
             gaugeData: gaugeData
         )
-    }
-    
-    func createCellData(
-        for category: WeatherCategory,
-        bottomText: String,
-        gaugePercentage: CGFloat? = nil
-    ) -> WeatherCellData {
-        let weatherDataType = WeatherDataType(category: category)
-        
-        if let gaugePercentage = gaugePercentage {
-            return createGaugeWeatherCellData(
-                weatherDataType: weatherDataType,
-                description: weatherDataType.title,
-                gaugeText: bottomText,
-                gaugePercentage: gaugePercentage
-            )
-        } else {
-            return createSimpleWeatherCellData(
-                weatherDataType: weatherDataType,
-                bottomText: bottomText
-            )
-        }
     }
     
     private func handleError(error: Error) {

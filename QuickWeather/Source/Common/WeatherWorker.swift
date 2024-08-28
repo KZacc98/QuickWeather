@@ -25,9 +25,11 @@ class WeatherWorker {
                     let decodedData = try decoder.decode(T.self, from: data)
                     completion(.success(decodedData))
                 } catch {
+                    print("Error decoding data: \(error)")
                     completion(.failure(error))
                 }
             case .failure(let error):
+                print("Error fetching data: \(error)")
                 completion(.failure(error))
             }
         }
@@ -40,7 +42,7 @@ class WeatherWorker {
         guard let cityName = cityName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
         let urlString = "https://api.openweathermap.org/geo/1.0/direct?q=\(cityName)&limit=5&appid=\(APIKey)"
         
-        fetchData(urlString: urlString) { (result: Result<Cities, Error>) in
+        fetchData(urlString: urlString) { (result: Result<[CityRemote], Error>) in
             switch result {
             case .success(let cities):
                 completion(.success(cities))
@@ -68,14 +70,14 @@ class WeatherWorker {
     
     func getForecast(
         for city: CityRemote,
-        completion: @escaping (Result<WeatherForecastRemote, Error>) -> Void)
+        completion: @escaping (Result<WeatherForecastDomain, Error>) -> Void)
     {
-        let urlString = "https://api.openweathermap.org/data/2.5/forecast?lat=\(city.latitude)&lon=\(city.longitude)&appid=\(APIKey)"
+        let urlString = "https://api.openweathermap.org/data/2.5/forecast?lat=\(city.latitude)&lon=\(city.longitude)&cnt=32&appid=\(APIKey)"
         
         fetchData(urlString: urlString) { (result: Result<WeatherForecastRemote, Error>) in
             switch result {
-            case .success(let forecastData):
-                completion(.success(forecastData))
+            case .success(let remote):
+                completion(.success(WeatherForecastDomain(remote: remote)))
             case .failure(let error):
                 completion(.failure(error))
             }

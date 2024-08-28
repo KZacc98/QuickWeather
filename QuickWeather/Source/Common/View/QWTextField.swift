@@ -11,6 +11,10 @@ class QWTextField: UITextField {
     
     // MARK: - Properties
     
+    var onTextFieldCleared: (() -> Void)?
+    
+    // MARK: - Private Properties
+    
     private let validationBackgroundView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -125,10 +129,7 @@ class QWTextField: UITextField {
     }
     
     @objc private func clearTextField() {
-        text = ""
-        clearIcon.isHidden = true
-        validationBackgroundView.isHidden = true
-        resignFirstResponder()
+        resetTextField()
     }
     
     // MARK: - Update Validation Label
@@ -138,5 +139,13 @@ class QWTextField: UITextField {
         validationLabel.textColor = isValid ? .clear : .red
         validationBackgroundView.isHidden = isValid
         validationLabel.isHidden = isValid
+    }
+    
+    func resetTextField() {
+        text = ""
+        clearIcon.isHidden = true
+        validationBackgroundView.isHidden = true
+        onTextFieldCleared?()
+        resignFirstResponder()
     }
 }

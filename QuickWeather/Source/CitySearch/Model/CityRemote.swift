@@ -8,7 +8,7 @@
 import Foundation
 
 /// A model representing a city or location retrieved from the [API](https://openweathermap.org/api/geocoding-api).
-struct CityRemote: Decodable {
+struct CityRemote: Codable {
     
     /// The name of the found location.
     let name: String
@@ -44,5 +44,3 @@ struct CityRemote: Decodable {
         case state
     }
 }
-
-typealias Cities = [CityRemote]

@@ -9,9 +9,11 @@ import UIKit
 
 class CityInfoHeaderView: UICollectionReusableView {
     
-    // MARK: - Properties
+    var didTapHeader: (() -> Void)?
     
-    lazy var mainBackgroundView: UIView = {
+    // MARK: - Private Properties
+    
+    private lazy var mainBackgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         view.setShadow(cornerRadius: 12)
@@ -30,7 +32,19 @@ class CityInfoHeaderView: UICollectionReusableView {
         return view
     }()
     
-    lazy var cityLabel: UILabel = {
+    private lazy var moreIcon: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 8
+        imageView.clipsToBounds = true
+        imageView.tintColor = .black
+        imageView.image = UIImage(named: "Info")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return imageView
+    }()
+    
+    private lazy var cityLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
         label.textAlignment = .center
@@ -39,7 +53,7 @@ class CityInfoHeaderView: UICollectionReusableView {
         return label
     }()
     
-    lazy var temperatureLabel: UILabel = {
+    private lazy var temperatureLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 70, weight: .bold)
         label.textAlignment = .center
@@ -53,6 +67,7 @@ class CityInfoHeaderView: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupAutoLayout()
+        addTapGestureRecognizer()
     }
     
     required init?(coder: NSCoder) {
@@ -63,6 +78,7 @@ class CityInfoHeaderView: UICollectionReusableView {
     
     func setupAutoLayout() {
         addSubview(mainBackgroundView)
+        mainBackgroundView.addSubview(moreIcon)
         mainBackgroundView.addSubview(temperatureLabel)
         mainBackgroundView.addSubview(cityLabel)
         
@@ -71,6 +87,11 @@ class CityInfoHeaderView: UICollectionReusableView {
             mainBackgroundView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
             mainBackgroundView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
             mainBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
+            
+            moreIcon.topAnchor.constraint(equalTo: mainBackgroundView.topAnchor, constant: 8),
+            moreIcon.trailingAnchor.constraint(equalTo: mainBackgroundView.trailingAnchor, constant: -8),
+            moreIcon.widthAnchor.constraint(equalToConstant: 24),
+            moreIcon.heightAnchor.constraint(equalToConstant: 24),
             
             cityLabel.topAnchor.constraint(equalTo: mainBackgroundView.topAnchor, constant: 12),
             cityLabel.leadingAnchor.constraint(equalTo: mainBackgroundView.leadingAnchor, constant: 12),
@@ -89,5 +110,17 @@ class CityInfoHeaderView: UICollectionReusableView {
         cityLabel.text = city
         temperatureLabel.text = temperature.localizedTemperature
         temperatureLabel.textColor = temperature.color
+    }
+    
+    // MARK: - Gesture Handling
+    
+    private func addTapGestureRecognizer() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        mainBackgroundView.isUserInteractionEnabled = true
+        mainBackgroundView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func handleTap() {
+        didTapHeader?()
     }
 }

@@ -8,16 +8,22 @@
 import UIKit
 
 class CityDetailsViewController: UIViewController {
+    
+    // MARK: - Binding Closures
 
+    var presentDetails: ((WeatherDataType, [ForecastDomain]) -> Void)?
+    
     // MARK: - Properties
     
-    var presentDetails: ((String) -> Void)?
-
     var city: CityRemote?
     var viewModel: CityDetailsViewModel!
     var isLoading = true
     
-    let collectionView: UICollectionView = {
+    // MARK: - Private Properties
+    
+    private var gradientIndex = 0
+    
+    private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         layout.minimumLineSpacing = 10
@@ -47,9 +53,7 @@ class CityDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
         title = "City Details"
-        
         setupBackgroundView()
         setupCollectionView()
         setupSpinner()
@@ -73,6 +77,13 @@ class CityDetailsViewController: UIViewController {
             self?.updateGradientColors(
                 topColor: colors.topColor,
                 bottomColor: colors.bottomColor)
+        }
+        
+        viewModel.presentDetails = { [weak self] title, data in
+            DispatchQueue.main.async {
+                self?.spinner.stopAnimating()
+                self?.presentDetails?(title, data)
+            }
         }
     }
     
@@ -154,6 +165,27 @@ class CityDetailsViewController: UIViewController {
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
+    }
+    
+    func cycleThroughGradients() {
+        let gradients: [(UIColor, UIColor)] = [
+            (UIColor(named: "DawnTop") ?? .white,
+             UIColor(named: "DawnBottom") ?? .white),
+            
+            (UIColor(named: "DayTop") ?? .white,
+             UIColor(named: "DayBottom") ?? .white),
+            
+            (UIColor(named: "DuskTop") ?? .white,
+             UIColor(named: "DuskBottom") ?? .white),
+            
+            (UIColor(named: "NightTop") ?? .white,
+             UIColor(named: "NightBottom") ?? .white)
+        ]
+        
+        let gradient = gradients[gradientIndex % gradients.count]
+        updateGradientColors(topColor: gradient.0, bottomColor: gradient.1)
+        
+        gradientIndex += 1
     }
 }
 
@@ -243,6 +275,11 @@ extension CityDetailsViewController: UICollectionViewDelegate, UICollectionViewD
             header.configure(
                 with: city.name,
                 temperature: weatherData.weatherDetails.temperature)
+            
+            header.didTapHeader = { [weak self] in
+                self?.spinner.startAnimating()
+                self?.viewModel.getWeatherDetails(for: .init(category: .temperature))
+            }
         }
         
         return header
@@ -255,7 +292,10 @@ extension CityDetailsViewController: UICollectionViewDelegate, UICollectionViewD
         let weatherCellData = viewModel.weatherCellData[indexPath.item]
         
         if weatherCellData.dataType.isDetailed {
-            presentDetails?(weatherCellData.dataType.title)
+            spinner.startAnimating()
+            viewModel.getWeatherDetails(for: weatherCellData.dataType)
+        } else {
+            cycleThroughGradients()
         }
     }
 }

@@ -16,7 +16,7 @@ class CitySearchViewController: UIViewController {
     
     // MARK: - Private Properties
     
-    private var cities: Cities = []
+    private var cities: [CityRemote] = []
     
     // MARK: - Properties
     
@@ -50,6 +50,9 @@ class CitySearchViewController: UIViewController {
         textField.returnKeyType = .search
         textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.onTextFieldCleared = { [weak self] in
+            self?.viewModel.setSavedCities()
+        }
         
         return textField
     }()
@@ -63,6 +66,8 @@ class CitySearchViewController: UIViewController {
         return tableView
     }()
     
+    private let spinner = UIActivityIndicatorView(style: .large)
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -72,12 +77,13 @@ class CitySearchViewController: UIViewController {
         title = "Search"
         setupBackgroundView()
         setupAutoLayout()
+        setupSpinner()
         bindViewModel()
-        updateGradientForTimeOfDay()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        //TODO: clear input at return
+        updateGradientForTimeOfDay()
+        searchBar.resetTextField()
     }
     
     // MARK: - Bind ViewModel
@@ -87,11 +93,12 @@ class CitySearchViewController: UIViewController {
             DispatchQueue.main.async {
                 self?.cities = locations
                 self?.resultsTableView.reloadData()
+                self?.spinner.stopAnimating()
             }
         }
     }
     
-    // MARK: - Setup AutoLayout
+    // MARK: - Setup Layout
     
     private func setupContainer() {
         view.addSubview(container)
@@ -104,16 +111,24 @@ class CitySearchViewController: UIViewController {
         ])
     }
     
-    func setupBackgroundView() {
+    private func setupSpinner() {
+        container.addSubview(spinner)
+        
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
+    
+    private func setupBackgroundView() {
         gradientLayer.frame = view.bounds
         view.layer.insertSublayer(gradientLayer, at: 0)
     }
     
-    func updateGradientColors(topColor: UIColor, bottomColor: UIColor) {
+    private func updateGradientColors(topColor: UIColor, bottomColor: UIColor) {
         gradientLayer.colors = [topColor.cgColor, bottomColor.cgColor]
     }
     
-    func updateGradientForTimeOfDay() {
+    private func updateGradientForTimeOfDay() {
         let hour = Calendar.current.component(.hour, from: Date())
         var topColor: UIColor
         var bottomColor: UIColor
@@ -172,20 +187,17 @@ class CitySearchViewController: UIViewController {
         setupSearchBar()
         setupTableView()
     }
-    
 }
 
 // MARK: - UITableViewDataSource
 
 extension CitySearchViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // Return number of rows based on your data or placeholder if no data yet
         return cities.isEmpty ? 1 : cities.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if cities.isEmpty {
-            // Return the placeholder cell when there are no cities
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: "PlaceholderCell",
                 for: indexPath) as? PlaceholderCell
@@ -193,11 +205,11 @@ extension CitySearchViewController: UITableViewDataSource, UITableViewDelegate {
                 return UITableViewCell()
             }
             
-            // Configure placeholder cell
-            cell.configure(withImage: UIImage(named: "Search"), andText: "Perform your first search, previously searched cities will appear here for easier access")
+            cell.configure(
+                withImage: UIImage(named: "Search"),
+                andText: "Perform your first search, previously searched cities will appear here for easier access")
             return cell
         } else {
-            // Return the regular city cell
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: "CitySearchCell",
                 for: indexPath) as? CitySearchTableViewCell
@@ -216,6 +228,7 @@ extension CitySearchViewController: UITableViewDataSource, UITableViewDelegate {
             tableView.deselectRow(at: indexPath, animated: true)
             let selectedCity = cities[indexPath.row]
             onCitySelected?(selectedCity)
+            viewModel.addCityToSavedCities(selectedCity)
         } else {
             tableView.deselectRow(at: indexPath, animated: true)
         }
@@ -238,6 +251,7 @@ extension CitySearchViewController: UITextFieldDelegate {
         let isValid = viewModel.validateCityName(cityName)
         
         if isValid {
+            spinner.startAnimating()
             searchBar.updateValidationLabel(isValid: true)
             viewModel.getCities(cityName: cityName)
             textField.resignFirstResponder()

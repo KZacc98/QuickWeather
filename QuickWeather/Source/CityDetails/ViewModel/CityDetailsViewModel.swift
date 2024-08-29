@@ -15,6 +15,7 @@ class CityDetailsViewModel {
     var cellDataChanged: (([WeatherCellData]) -> Void)?
     var updateGradient: (((topColor: UIColor, bottomColor: UIColor)) -> Void)?
     var presentDetails: ((WeatherDataType, [ForecastDomain]) -> Void)?
+    var onError: (() -> Void)?
     
     // MARK: - Properties
     
@@ -100,14 +101,11 @@ class CityDetailsViewModel {
             gaugePercentage: weatherData.weatherDetails.humidity.gaugePercentage)
         let cloudiness = createCellData(
             for: .cloudiness,
-            bottomText: "\(weatherData.clouds.cloudiness)%",
+            bottomText: String(format: "cloudinessFormat".localized, weatherData.clouds.cloudiness),
             gaugePercentage: CGFloat(weatherData.clouds.cloudiness) / 100.0)
-        let visibility = createCellData(
-            for: .visibility,
-            bottomText: "\(weatherData.visibility) meters")
         let windSpeed = createCellData(
             for: .windSpeed,
-            bottomText: "\(weatherData.wind.speed) m/s")
+            bottomText: String(format: "windSpeedFormat".localized, weatherData.wind.speed))
         let pressure = createCellData(
             for: .pressure,
             bottomText: weatherData.weatherDetails.pressure.inHPA)
@@ -116,22 +114,28 @@ class CityDetailsViewModel {
             feelsLike,
             humidity,
             cloudiness,
-            visibility,
             windSpeed,
             pressure
         ]
+        
+        if let visibility = weatherData.visibility {
+            let visibility = createCellData(
+                for: .visibility,
+                bottomText: String(format: "visibilityFormat".localized, visibility))
+            cellDataArray.append(visibility)
+        }
 
         if let rain = weatherData.rain, let oneHourRain = rain.oneHour {
             let rainData = createCellData(
                 for: .rain,
-                bottomText: "\(oneHourRain) mm")
+                bottomText: String(format: "rainSnowFormat".localized, oneHourRain))
             cellDataArray.insert(rainData, at: 0)
         }
 
         if let snow = weatherData.snow, let oneHourSnow = snow.oneHour {
             let snowData = createCellData(
                 for: .snow,
-                bottomText: "\(oneHourSnow) mm")
+                bottomText: String(format: "rainSnowFormat".localized, oneHourSnow))
             cellDataArray.insert(snowData, at: 0)
         }
 
@@ -171,7 +175,8 @@ class CityDetailsViewModel {
     
     private func handleError(error: Error) {
         print("Error occurred: \(error.localizedDescription)")
-        let errorMessage = error.localizedDescription.appending("\n Did you add your API Key?")
-        showAlert?("Error", errorMessage)
+        let errorMessage = error.localizedDescription.appending("apiKeyMessage".localized)
+        showAlert?("error".localized, errorMessage)
+        onError?()
     }
 }

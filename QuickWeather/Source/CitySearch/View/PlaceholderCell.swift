@@ -9,7 +9,7 @@ import UIKit
 
 class PlaceholderCell: UITableViewCell {
 
-    // MARK: - Properties
+    // MARK: - Private Properties
 
     private let imageViewPlaceholder: UIImageView = {
         let imageView = UIImageView()
@@ -63,5 +63,14 @@ class PlaceholderCell: UITableViewCell {
     func configure(withImage image: UIImage?, andText text: String) {
         imageViewPlaceholder.image = image
         titleLabel.text = text
+    }
+    
+    // MARK: - Prepare for Reuse
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        imageViewPlaceholder.image = nil
+        titleLabel.text = nil
     }
 }

@@ -53,7 +53,7 @@ class CityDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "City Details"
+        title = "weather".localized
         setupBackgroundView()
         setupCollectionView()
         setupSpinner()
@@ -83,6 +83,12 @@ class CityDetailsViewController: UIViewController {
             DispatchQueue.main.async {
                 self?.spinner.stopAnimating()
                 self?.presentDetails?(title, data)
+            }
+        }
+        
+        viewModel.onError = { [weak self] in
+            DispatchQueue.main.async {
+                self?.spinner.stopAnimating()
             }
         }
     }

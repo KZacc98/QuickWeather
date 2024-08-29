@@ -32,6 +32,8 @@ class QWTextField: UITextField {
         label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = .red
         label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 8
         label.isHidden = true
         
         return label

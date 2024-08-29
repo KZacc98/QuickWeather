@@ -18,7 +18,7 @@ struct WeatherDomain {
     let weatherDetails: WeatherDetailsDomain
     
     /// The visibility in meters.
-    let visibility: Int
+    let visibility: Int?
     
     /// Wind data including speed, direction, and gust.
     let wind: WindRemote

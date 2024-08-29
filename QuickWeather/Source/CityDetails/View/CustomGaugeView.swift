@@ -9,7 +9,8 @@ import UIKit
 
 class CustomGaugeView: UIView {
 
-    // MARK: - Properties
+    // MARK: - Private Properties
+    
     private let animationDuration: CFTimeInterval = 0.5
     private let shapeLayer = CAShapeLayer()
     private let backgroundLayer = CAShapeLayer()
@@ -22,6 +23,7 @@ class CustomGaugeView: UIView {
     }
     
     // MARK: - Initializers
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -86,4 +88,3 @@ class CustomGaugeView: UIView {
         shapeLayer.add(basicAnimation, forKey: "progressAnimation")
     }
 }
-

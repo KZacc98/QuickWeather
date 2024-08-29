@@ -38,7 +38,7 @@ class WeatherDetailViewModel {
             case .pressure:
                 valueText = firstForecast.weatherDetails.pressure.inHPA
             default:
-                valueText = "N/A"
+                valueText = "notApplicable".localized
             }
             configurations.append(DetailsCellData(
                 type: .simpleDetail,
@@ -50,7 +50,7 @@ class WeatherDetailViewModel {
         } else {
             configurations.append(DetailsCellData(
                 type: .simpleDetail,
-                value: "N/A",
+                value: "notApplicable".localized,
                 day: nil,
                 time: dataType.title
             ))
@@ -58,8 +58,8 @@ class WeatherDetailViewModel {
         
         configurations.append(DetailsCellData(
             type: .dayHeader,
-            value: "Value",
-            day: "Time",
+            value: "value".localized,
+            day: "time".localized,
             time: nil
         ))
         

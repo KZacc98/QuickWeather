@@ -15,8 +15,6 @@ struct WeatherDataType {
             .temperature,
             .tempFeelsLike,
             .humidity,
-            .rain,
-            .snow,
             .pressure
         ]
         
@@ -26,23 +24,23 @@ struct WeatherDataType {
     var title: String {
         switch category {
         case .temperature:
-            return "Temperature"
+            return "temperature".localized
         case .tempFeelsLike:
-            return "Feels Like"
+            return "feelsLike".localized
         case .humidity:
-            return "Humidity"
+            return "humidity".localized
         case .cloudiness:
-            return "Cloudiness"
+            return "cloudiness".localized
         case .windSpeed:
-            return "Wind speed"
+            return "windSpeed".localized
         case .rain:
-            return "Rainfall"
+            return "rainfall".localized
         case .snow:
-            return "Snowfall"
+            return "snowfall".localized
         case .pressure:
-            return "Pressure"
+            return "pressure".localized
         case .visibility:
-            return "Visibility"
+            return "visibility".localized
         }
     }
 

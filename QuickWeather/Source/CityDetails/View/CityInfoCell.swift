@@ -9,9 +9,9 @@ import UIKit
 
 class CityInfoCell: UICollectionViewCell {
     
-    // MARK: - Properties
+    // MARK: - Private Properties
     
-    lazy var cityLabel: UILabel = {
+    private lazy var cityLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         label.textAlignment = .center
@@ -19,7 +19,7 @@ class CityInfoCell: UICollectionViewCell {
         return label
     }()
     
-    lazy var temperatureLabel: UILabel = {
+    private lazy var temperatureLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 24, weight: .regular)
         label.textAlignment = .center
@@ -27,7 +27,7 @@ class CityInfoCell: UICollectionViewCell {
         return label
     }()
     
-    lazy var stackView: UIStackView = {
+    private lazy var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [cityLabel, temperatureLabel])
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -63,5 +63,14 @@ class CityInfoCell: UICollectionViewCell {
     func configure(with city: String, temperature: String) {
         cityLabel.text = city
         temperatureLabel.text = temperature
+    }
+    
+    // MARK: - Prepare for Reuse
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        cityLabel.text = nil
+        temperatureLabel.text = nil
     }
 }

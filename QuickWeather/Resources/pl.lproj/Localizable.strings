@@ -1,0 +1,47 @@
+/* 
+  Localizable.strings
+  QuickWeather
+
+  Created by Kamil Zachara-personal on 29/08/2024.
+  
+*/
+
+//Weather Data Labels
+"weather" = "Pogoda";
+"temperature" = "Temperatura";
+"feelsLike" = "Odczuwalna";
+"humidity" = "Wilgotność";
+"cloudiness" = "Zachmurzenie";
+"windSpeed" = "Prędkość wiatru";
+"rainfall" = "Opady deszczu";
+"snowfall" = "Opady śniegu";
+"pressure" = "Ciśnienie";
+"visibility" = "Widoczność";
+
+//Weather Data Formats
+"celsiusFormat" = "%.0f°C";
+"fahrenheitFormat" = "%.0f°F";
+"humidityFormat" = "%d %%";
+"cloudinessFormat" = "%d %%";
+"windSpeedFormat" = "%.2f m/s";
+"rainSnowFormat" = "%.0f mm";
+"pressureFormat" = "%d hPa";
+"visibilityFormat" = "%d metrów";
+
+//Error and Information Messages
+"apiKeyMessage" = "\n Czy dodałeś swój klucz API w WeatherWorker?";
+"error" = "Błąd";
+"notApplicable" = "N/D";
+"value" = "Wartość";
+"time" = "Czas";
+
+//City Search and Validation
+"noCitiesFound" = "Nie znaleziono miast";
+"enterCityName" = "Wprowadź nazwę miasta";
+"search" = "Szukaj";
+"searchInfo" = "Wykonaj pierwsze wyszukiwanie, wcześniej wyszukane miasta będą tu widoczne dla łatwiejszego dostępu";
+"validationEmpty" = "Pole nie może być puste";
+"validationError" = "Dozwolone są tylko litery i spacje.";
+
+//User Actions
+"alertActionOk" = "OK";

@@ -11,7 +11,7 @@ struct Humidity {
     let humidity: Int
     
     var percentage: String {
-        return "\(humidity)%"
+        return String(format: "humidityFormat".localized, humidity)
     }
     
     var gaugePercentage: CGFloat {

@@ -35,6 +35,10 @@
 		DE0F07CC2C78FA1000677861 /* QWButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0F07CB2C78FA1000677861 /* QWButton.swift */; };
 		DE97B03E2C78FB89007D9F05 /* QWTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE97B03D2C78FB89007D9F05 /* QWTextField.swift */; };
 		DE97B0402C7917BA007D9F05 /* CitySearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE97B03F2C7917BA007D9F05 /* CitySearchViewModel.swift */; };
+		DEDBA4422C80D3A100938995 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEDBA4412C80D3A100938995 /* String+Extension.swift */; };
+		DEDBA44B2C80DD6B00938995 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DEDBA4492C80DD6B00938995 /* Localizable.strings */; };
+		DEDBA4502C80F2D000938995 /* FlagKit in Frameworks */ = {isa = PBXBuildFile; productRef = DEDBA44F2C80F2D000938995 /* FlagKit */; };
+		DEDBA4522C80F3BA00938995 /* NSAttributedString+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEDBA4512C80F3BA00938995 /* NSAttributedString+Extension.swift */; };
 		DEE666D52C7CE3830092A04D /* SimpleWeatherCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE666D42C7CE3830092A04D /* SimpleWeatherCell.swift */; };
 		DEE666D92C7CF6190092A04D /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE666D82C7CF6190092A04D /* UIView+Extension.swift */; };
 		DEE666DB2C7D02DB0092A04D /* WeatherForecastRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE666DA2C7D02DB0092A04D /* WeatherForecastRemote.swift */; };
@@ -96,6 +100,11 @@
 		DE0F07CB2C78FA1000677861 /* QWButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QWButton.swift; sourceTree = "<group>"; };
 		DE97B03D2C78FB89007D9F05 /* QWTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QWTextField.swift; sourceTree = "<group>"; };
 		DE97B03F2C7917BA007D9F05 /* CitySearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitySearchViewModel.swift; sourceTree = "<group>"; };
+		DEDBA4412C80D3A100938995 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		DEDBA44A2C80DD6B00938995 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DEDBA44C2C80DD8A00938995 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		DEDBA44D2C80DD8A00938995 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DEDBA4512C80F3BA00938995 /* NSAttributedString+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+Extension.swift"; sourceTree = "<group>"; };
 		DEE666D42C7CE3830092A04D /* SimpleWeatherCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleWeatherCell.swift; sourceTree = "<group>"; };
 		DEE666D82C7CF6190092A04D /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		DEE666DA2C7D02DB0092A04D /* WeatherForecastRemote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherForecastRemote.swift; sourceTree = "<group>"; };
@@ -131,6 +140,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEDBA4502C80F2D000938995 /* FlagKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				DE0F07A92C78EE0500677861 /* Assets.xcassets */,
+				DEDBA4492C80DD6B00938995 /* Localizable.strings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -236,6 +247,8 @@
 				DEE666D82C7CF6190092A04D /* UIView+Extension.swift */,
 				DEE74FE12C7F80BB009755E7 /* Int+Extension.swift */,
 				DEE74FF02C7FAD5C009755E7 /* Date+Extension.swift */,
+				DEDBA4412C80D3A100938995 /* String+Extension.swift */,
+				DEDBA4512C80F3BA00938995 /* NSAttributedString+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -465,6 +478,9 @@
 			dependencies = (
 			);
 			name = QuickWeather;
+			packageProductDependencies = (
+				DEDBA44F2C80F2D000938995 /* FlagKit */,
+			);
 			productName = QuickWeather;
 			productReference = DE0F079D2C78EE0400677861 /* QuickWeather.app */;
 			productType = "com.apple.product-type.application";
@@ -491,8 +507,12 @@
 			knownRegions = (
 				en,
 				Base,
+				pl,
 			);
 			mainGroup = DE0F07942C78EE0400677861;
+			packageReferences = (
+				DEDBA44E2C80F2D000938995 /* XCRemoteSwiftPackageReference "FlagKit" */,
+			);
 			productRefGroup = DE0F079E2C78EE0400677861 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -508,6 +528,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE0F07AA2C78EE0500677861 /* Assets.xcassets in Resources */,
+				DEDBA44B2C80DD6B00938995 /* Localizable.strings in Resources */,
 				DE0F07AD2C78EE0500677861 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -542,6 +563,7 @@
 				DE05E7EE2C7B8C51003D7A1D /* WindRemote.swift in Sources */,
 				DE05E7F82C7BA74C003D7A1D /* WeatherWorker.swift in Sources */,
 				DE05E7F42C7B8C85003D7A1D /* SnowRemote.swift in Sources */,
+				DEDBA4422C80D3A100938995 /* String+Extension.swift in Sources */,
 				DEE666F02C7D2D730092A04D /* GaugeData.swift in Sources */,
 				DE05E7F62C7B8C90003D7A1D /* SystemRemote.swift in Sources */,
 				DEE666D92C7CF6190092A04D /* UIView+Extension.swift in Sources */,
@@ -559,6 +581,7 @@
 				DEE666F42C7D2DD50092A04D /* ForecastRemote.swift in Sources */,
 				DEE666DB2C7D02DB0092A04D /* WeatherForecastRemote.swift in Sources */,
 				DEE666F62C7D2E8A0092A04D /* CityDetailsRemote.swift in Sources */,
+				DEDBA4522C80F3BA00938995 /* NSAttributedString+Extension.swift in Sources */,
 				DEE74FF92C7FD4F3009755E7 /* DayCell.swift in Sources */,
 				DEE6A72B2C7E3B8F00EB246B /* WeatherDatatype.swift in Sources */,
 				DEE74FE62C7F81A7009755E7 /* ForecastDomain.swift in Sources */,
@@ -583,8 +606,18 @@
 			isa = PBXVariantGroup;
 			children = (
 				DE0F07AC2C78EE0500677861 /* Base */,
+				DEDBA44C2C80DD8A00938995 /* pl */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		DEDBA4492C80DD6B00938995 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DEDBA44A2C80DD6B00938995 /* en */,
+				DEDBA44D2C80DD8A00938995 /* pl */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -595,6 +628,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -658,6 +692,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -789,6 +824,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DEDBA44E2C80F2D000938995 /* XCRemoteSwiftPackageReference "FlagKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/madebybowtie/FlagKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DEDBA44F2C80F2D000938995 /* FlagKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DEDBA44E2C80F2D000938995 /* XCRemoteSwiftPackageReference "FlagKit" */;
+			productName = FlagKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DE0F07952C78EE0400677861 /* Project object */;
 }

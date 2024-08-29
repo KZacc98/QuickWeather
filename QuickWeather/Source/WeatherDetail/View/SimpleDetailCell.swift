@@ -9,9 +9,9 @@ import UIKit
 
 class SimpleDetailCell: UITableViewCell {
 
-    // MARK: - Properties
+    // MARK: - Private Properties
     
-    lazy var mainBackgroundView: UIView = {
+    private lazy var mainBackgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         view.setShadow(cornerRadius: 12)
@@ -30,7 +30,7 @@ class SimpleDetailCell: UITableViewCell {
         return view
     }()
     
-    lazy var topLabel: UILabel = {
+    private lazy var topLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 60, weight: .bold)
@@ -39,7 +39,7 @@ class SimpleDetailCell: UITableViewCell {
         return label
     }()
     
-    lazy var bottomLabel: UILabel = {
+    private lazy var bottomLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 30, weight: .regular)
@@ -72,12 +72,10 @@ class SimpleDetailCell: UITableViewCell {
             mainBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             mainBackgroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             
-            // Top label constraints
             topLabel.topAnchor.constraint(equalTo: mainBackgroundView.topAnchor, constant: 10),
             topLabel.leadingAnchor.constraint(equalTo: mainBackgroundView.leadingAnchor, constant: 10),
             topLabel.trailingAnchor.constraint(equalTo: mainBackgroundView.trailingAnchor, constant: -10),
             
-            // Bottom label constraints
             bottomLabel.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 10),
             bottomLabel.leadingAnchor.constraint(equalTo: mainBackgroundView.leadingAnchor, constant: 10),
             bottomLabel.trailingAnchor.constraint(equalTo: mainBackgroundView.trailingAnchor, constant: -10),
@@ -96,5 +94,17 @@ class SimpleDetailCell: UITableViewCell {
         topLabel.text = topText
         topLabel.textColor = textColor
         bottomLabel.text = bottomText
+        bottomLabel.textColor = textColor
+    }
+    
+    // MARK: - Prepare for Reuse
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        topLabel.text = nil
+        topLabel.textColor = .black
+        bottomLabel.text = nil
+        bottomLabel.textColor = .black
     }
 }

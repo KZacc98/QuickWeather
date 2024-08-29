@@ -104,7 +104,7 @@ extension WeatherDetailViewController: UITableViewDataSource {
         switch config.type {
         case .simpleDetail:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SimpleDetailCell", for: indexPath) as! SimpleDetailCell
-            cell.configure(topText: config.value ?? "N/A", bottomText: config.time ?? "", textColor: config.fontColor)
+            cell.configure(topText: config.value ?? "notApplicable".localized, bottomText: config.time ?? "", textColor: config.fontColor)
             cell.backgroundColor = .clear
             cell.isUserInteractionEnabled = false
             return cell

@@ -9,9 +9,9 @@ import UIKit
 
 class GaugeCell: UICollectionViewCell {
     
-    // MARK: - Properties
+    // MARK: - Private Properties
     
-    lazy var mainBackgroundView: UIView = {
+    private lazy var mainBackgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         view.setShadow(cornerRadius: 12)
@@ -30,7 +30,7 @@ class GaugeCell: UICollectionViewCell {
         return view
     }()
     
-    lazy var supplementaryIcon: UIImageView = {
+    private lazy var supplementaryIcon: UIImageView = {
         let image = UIImageView()
         image.tintColor = .black
         image.isHidden = true
@@ -40,7 +40,7 @@ class GaugeCell: UICollectionViewCell {
         return image
     }()
     
-    lazy var moreIcon: UIImageView = {
+    private lazy var moreIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 8
@@ -53,14 +53,14 @@ class GaugeCell: UICollectionViewCell {
         return imageView
     }()
     
-    lazy var gaugeView: CustomGaugeView = {
+    private lazy var gaugeView: CustomGaugeView = {
         let gauge = CustomGaugeView()
         gauge.translatesAutoresizingMaskIntoConstraints = false
         
         return gauge
     }()
     
-    lazy var gaugeLabel: UILabel = {
+    private lazy var gaugeLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.textAlignment = .center
@@ -69,7 +69,7 @@ class GaugeCell: UICollectionViewCell {
         return label
     }()
     
-    lazy var descriptionLabel: UILabel = {
+    private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .center
@@ -154,5 +154,17 @@ class GaugeCell: UICollectionViewCell {
         } else {
             moreIcon.isHidden = true
         }
+    }
+    
+    // MARK: - Prepare for Reuse
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        supplementaryIcon.image = nil
+        supplementaryIcon.isHidden = true
+        gaugeLabel.text = nil
+        descriptionLabel.text = nil
+        moreIcon.isHidden = true
     }
 }

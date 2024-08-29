@@ -9,6 +9,7 @@ import Foundation
 
 @propertyWrapper
 struct PersistStorage<T: Codable> {
+    
     // MARK: - Public attributes
     
     let key: Key

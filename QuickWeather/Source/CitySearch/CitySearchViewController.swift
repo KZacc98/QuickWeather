@@ -46,7 +46,7 @@ class CitySearchViewController: UIViewController {
     
     lazy var searchBar: QWTextField = {
         let textField = QWTextField()
-        textField.placeholder = "Enter city name"
+        textField.placeholder = "enterCityName".localized
         textField.returnKeyType = .search
         textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -73,8 +73,7 @@ class CitySearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemPink
-        title = "Search"
+        title = "search".localized
         setupBackgroundView()
         setupAutoLayout()
         setupSpinner()
@@ -93,6 +92,12 @@ class CitySearchViewController: UIViewController {
             DispatchQueue.main.async {
                 self?.cities = locations
                 self?.resultsTableView.reloadData()
+                self?.spinner.stopAnimating()
+            }
+        }
+        
+        viewModel.onError = { [weak self] in
+            DispatchQueue.main.async {
                 self?.spinner.stopAnimating()
             }
         }
@@ -207,7 +212,7 @@ extension CitySearchViewController: UITableViewDataSource, UITableViewDelegate {
             
             cell.configure(
                 withImage: UIImage(named: "Search"),
-                andText: "Perform your first search, previously searched cities will appear here for easier access")
+                andText: "searchInfo".localized)
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(
@@ -243,7 +248,7 @@ extension CitySearchViewController: UITextFieldDelegate {
             let cityName = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
             !cityName.isEmpty
         else {
-            searchBar.updateValidationLabel(withText: "Input cannot be empty", isValid: false)
+            searchBar.updateValidationLabel(withText: "validationEmpty".localized, isValid: false)
             
             return false
         }
@@ -256,7 +261,8 @@ extension CitySearchViewController: UITextFieldDelegate {
             viewModel.getCities(cityName: cityName)
             textField.resignFirstResponder()
         } else {
-            searchBar.updateValidationLabel(withText: "Invalid input. Only letters and spaces are allowed.", isValid: false)
+            searchBar.updateValidationLabel(withText: "validationError".localized, isValid: false)
+            spinner.stopAnimating()
         }
         
         return false

@@ -14,6 +14,7 @@ class CitySearchViewModel {
     var showAlert: ((String, String) -> Void)?
     var citiesDidChange: (([CityRemote]) -> Void)?
     var weatherFetched: ((CityRemote, WeatherDomain) -> Void)?
+    var onError: (() -> Void)?
     
     // MARK: - Properties
     
@@ -45,6 +46,7 @@ class CitySearchViewModel {
             case .success(let success):
                 guard success.isEmpty == false else {
                     self?.showAlert?("", "No cities found")
+                    self?.onError?()
                     return
                 }
                 self?.cities = success
@@ -63,8 +65,9 @@ class CitySearchViewModel {
     
     private func handleError(error: Error) {
         print("Error occurred: \(error.localizedDescription)")
-        let errorMessage = error.localizedDescription.appending("\n Did you add your API Key?")
-        showAlert?("Error", errorMessage)
+        let errorMessage = error.localizedDescription.appending("apiKeyMessage".localized)
+        showAlert?("error".localized, errorMessage)
+        onError?()
     }
     
     func addCityToSavedCities(_ city: CityRemote) {

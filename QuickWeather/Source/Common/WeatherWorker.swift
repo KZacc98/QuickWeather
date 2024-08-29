@@ -9,7 +9,7 @@ import Foundation
 
 class WeatherWorker {
     #warning("Provide your own API Key, and comment/remove this message")
-    let APIKey: String = "2b35ddbd9f697f0df3bfea3e2002415d" //changed, pushed accidentaly
+    let APIKey: String = "" //changed, pushed accidentaly
     
     private func fetchData<T: Decodable>(
         urlString: String,

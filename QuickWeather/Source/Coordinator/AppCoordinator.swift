@@ -18,13 +18,6 @@ class AppCoordinator {
         let viewController = CitySearchViewController()
         let viewModel = CitySearchViewModel()
         
-        viewModel.showAlert = { [weak viewController] title, message in
-            DispatchQueue.main.async {
-                guard let viewController else { return }
-                DialogManager.shared.showAlert(on: viewController, title: title, message: message)
-            }
-        }
-        
         viewController.viewModel = viewModel
         
         viewController.getCity = { [weak viewModel] cityName in
@@ -35,18 +28,33 @@ class AppCoordinator {
             self?.pushCityDetails(for: city)
         }
         
+        viewModel.showAlert = { [weak viewController] title, message in
+            DispatchQueue.main.async {
+                guard let viewController else { return }
+                DialogManager.shared.showAlert(on: viewController, title: title, message: message)
+            }
+        }
+        
         navigationController?.pushViewController(viewController, animated: true)
     }
     
     func pushCityDetails(for city: CityRemote) {
         let viewController = CityDetailsViewController()
+        let viewModel = CityDetailsViewModel(city: city)
         
-        viewController.viewModel = CityDetailsViewModel(city: city)
-        
+        viewController.viewModel = viewModel
         viewController.city = city
+        
         viewController.presentDetails = { [weak self] title, forecastData in
             DispatchQueue.main.async {
                 self?.presentWeatherDetail(dataType: title, forecast: forecastData)
+            }
+        }
+        
+        viewModel.showAlert = { [weak viewController] title, message in
+            DispatchQueue.main.async {
+                guard let viewController else { return }
+                DialogManager.shared.showAlert(on: viewController, title: title, message: message)
             }
         }
         

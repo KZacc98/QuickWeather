@@ -11,19 +11,14 @@ import UIKit
 struct Temperature {
     // In Kelvin
     let value: Double
+    let isMetric = Locale.current.usesMetricSystem
     
     var localizedTemperature: String {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.maximumFractionDigits = 0
-        numberFormatter.minimumFractionDigits = 0
-        numberFormatter.numberStyle = .decimal
-        
-        let formatter = MeasurementFormatter()
-        formatter.locale = Locale.current
-        formatter.unitOptions = .providedUnit
-        formatter.numberFormatter = numberFormatter
-        
-        return formatter.string(from: preferredUnit)
+        if isMetric {
+            return String(format: "celsiusFormat".localized, localizedValue)
+        } else {
+            return String(format: "fahrenheitFormat".localized, localizedValue)
+        }
     }
     
     var localizedValue: Double {
@@ -31,8 +26,6 @@ struct Temperature {
     }
     
     var preferredUnit: Measurement<UnitTemperature> {
-        let isMetric = Locale.current.usesMetricSystem
-        
         if isMetric {
             // Kelvin to Celsius (K - 273.15)
             return Measurement(value: value - 273.15, unit: .celsius)
@@ -47,7 +40,7 @@ struct Temperature {
     var color: UIColor {
         let celsiusValue: Double
         
-        if Locale.current.usesMetricSystem {
+        if isMetric {
             celsiusValue = localizedValue
         } else {
             // Fahrenheit to Celsius

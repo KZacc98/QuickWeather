@@ -20,7 +20,7 @@ struct WeatherRemote: Decodable {
     let weatherDetails: WeatherDetailsRemote
     
     /// The visibility in meters.
-    let visibility: Int
+    let visibility: Int?
     
     /// Wind data including speed, direction, and gust.
     let wind: WindRemote

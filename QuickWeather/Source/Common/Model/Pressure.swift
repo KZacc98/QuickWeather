@@ -11,7 +11,7 @@ struct Pressure {
     let pressure: Int
     
     var inHPA: String {
-        return "\(pressure)hPa"
+        return String(format: "pressureFormat".localized, pressure)
     }
     
     init(pressure: Int) {

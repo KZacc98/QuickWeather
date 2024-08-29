@@ -9,9 +9,9 @@ import UIKit
 
 class SimpleWeatherCell: UICollectionViewCell {
     
-    // MARK: - Properties
+    // MARK: - Private Properties
     
-    lazy var mainBackgroundView: UIView = {
+    private lazy var mainBackgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         view.setShadow(cornerRadius: 12)
@@ -30,7 +30,7 @@ class SimpleWeatherCell: UICollectionViewCell {
         return view
     }()
     
-    lazy var stackView: UIStackView = {
+    private lazy var stackView: UIStackView = {
         let view = UIStackView(arrangedSubviews: [iconImageView])
         view.axis = .horizontal
         view.distribution = .fill
@@ -40,7 +40,7 @@ class SimpleWeatherCell: UICollectionViewCell {
         return view
     }()
     
-    lazy var iconImageView: UIImageView = {
+    private lazy var iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 8
@@ -51,7 +51,7 @@ class SimpleWeatherCell: UICollectionViewCell {
         return imageView
     }()
     
-    lazy var moreIcon: UIImageView = {
+    private lazy var moreIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 8
@@ -64,14 +64,14 @@ class SimpleWeatherCell: UICollectionViewCell {
         return imageView
     }()
     
-    lazy var labelContainer: UIView = {
+    private lazy var labelContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
     }()
     
-    lazy var topLabel: UILabel = {
+    private lazy var topLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .light)
         label.textAlignment = .left
@@ -80,7 +80,7 @@ class SimpleWeatherCell: UICollectionViewCell {
         return label
     }()
     
-    lazy var bottomLabel: UILabel = {
+    private lazy var bottomLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 25, weight: .semibold)
         label.textAlignment = .left
@@ -159,5 +159,17 @@ class SimpleWeatherCell: UICollectionViewCell {
         } else {
             moreIcon.isHidden = true
         }
+    }
+    
+    // MARK: - Prepare for Reuse
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        iconImageView.image = nil
+        iconImageView.isHidden = true
+        topLabel.text = nil
+        bottomLabel.text = nil
+        moreIcon.isHidden = true
     }
 }

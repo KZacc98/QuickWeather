@@ -94,22 +94,6 @@ class DayCell: UITableViewCell {
         ])
     }
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        
-        iconView.image = nil
-        iconView.isHidden = true
-        
-        label1.text = nil
-        label1.isHidden = true
-        
-        label2.text = nil
-        label2.isHidden = true
-        
-        label3.text = nil
-        label3.isHidden = true
-    }
-    
     // MARK: - Configuration
     
     func configure(
@@ -157,5 +141,20 @@ class DayCell: UITableViewCell {
         } else {
             label3.isHidden = true
         }
+    }
+    
+    // MARK: - Prepare for Reuse
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        iconView.image = nil
+        iconView.isHidden = true
+        label1.text = nil
+        label1.isHidden = true
+        label2.text = nil
+        label2.isHidden = true
+        label3.text = nil
+        label3.isHidden = true
     }
 }
